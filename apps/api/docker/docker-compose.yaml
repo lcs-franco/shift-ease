@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:15
+    container_name: shiftease-db
+    environment:
+      - POSTGRES_DB=shiftease
+      - POSTGRES_USER=rotation
+      - POSTGRES_PASSWORD=itinerary
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

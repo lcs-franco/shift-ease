@@ -1,0 +1,8 @@
+{
+  "apps/ui/**/*.{js,jsx,ts,tsx}": [
+    "biome check --write",
+    "biome format --write"
+  ],
+  "apps/api/**/*.{js,ts}": ["prettier --write"],
+  "**/*.{json,md}": ["prettier --write"]
+}

@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  MANAGER
+  ADMIN
+
+  @@map("roles")
+}
+
+enum ShiftExchangeStatus {
+  PENDING
+  APPROVED_RECEIVER
+  APPROVED_MANAGER
+  REJECTED
+
+  @@map("shift_exchange_status")
+}
+
+enum WeekDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+
+  @@map("week_days")
+}
+
+enum ShiftType {
+  DIURNAL
+  NOCTURNAL
+
+  @@map("shift_types")
+}
+
+model User {
+  id            String @id @default(uuid()) @db.Uuid
+  name          String
+  email         String @unique
+  password      String
+  department_id String @db.Uuid
+  role          Role   @default(USER)
+
+  department Department @relation(fields: [department_id], references: [id], onDelete: Cascade)
+
+  schedules         Schedule[]
+  requests_sent     ShiftExchangeRequest[] @relation("requests_sent")
+  requests_received ShiftExchangeRequest[] @relation("requests_received")
+
+  @@map("users")
+}
+
+model Department {
+  id   String @id @default(uuid()) @db.Uuid
+  name String
+  code String @unique
+
+  users                   User[]
+  shifts                  Shift[]
+  shift_exchange_requests ShiftExchangeRequest[]
+
+  @@map("departments")
+}
+
+model Shift {
+  id            String    @id @default(uuid()) @db.Uuid
+  department_id String    @db.Uuid
+  type          ShiftType
+
+  department Department @relation(fields: [department_id], references: [id])
+
+  schedule_shifts ScheduleShift[]
+
+  @@map("shifts")
+}
+
+model Schedule {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @unique @db.Uuid
+  name       String
+  start_date DateTime
+  end_date   DateTime
+
+  user            User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  schedule_shifts ScheduleShift[]
+
+  @@map("schedules")
+}
+
+model ScheduleShift {
+  id          String   @id @default(uuid()) @db.Uuid
+  schedule_id String   @db.Uuid
+  shift_id    String   @db.Uuid
+  day_week    WeekDay
+  date        DateTime
+
+  schedule           Schedule               @relation(fields: [schedule_id], references: [id])
+  shift              Shift                  @relation(fields: [shift_id], references: [id])
+  origin_shifts      ShiftExchangeRequest[] @relation("origin_shift")
+  destination_shifts ShiftExchangeRequest[] @relation("destination_shift")
+
+  @@map("schedule_shifts")
+}
+
+model ShiftExchangeRequest {
+  id              String              @id @default(uuid()) @db.Uuid
+  applicant_id    String              @db.Uuid
+  receptor_id     String              @db.Uuid
+  department_id   String              @db.Uuid
+  status          ShiftExchangeStatus @default(PENDING)
+  origin_shift_id String              @db.Uuid
+  destination_id  String              @db.Uuid
+  start_date      DateTime            @default(now())
+  end_date        DateTime?
+  reason          String?
+
+  applicant         User          @relation("requests_sent", fields: [applicant_id], references: [id])
+  receptor          User          @relation("requests_received", fields: [receptor_id], references: [id])
+  department        Department    @relation(fields: [department_id], references: [id])
+  origin_shift      ScheduleShift @relation("origin_shift", fields: [origin_shift_id], references: [id])
+  destination_shift ScheduleShift @relation("destination_shift", fields: [destination_id], references: [id])
+
+  @@map("shift_exchange_requests")
+}

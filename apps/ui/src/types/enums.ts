@@ -1,0 +1,27 @@
+export enum Role {
+	USER = "USER",
+	MANAGER = "MANAGER",
+	ADMIN = "ADMIN",
+}
+
+export enum ShiftExchangeStatus {
+	PENDING = "PENDING",
+	APPROVED_RECEIVER = "APPROVED_RECEIVER",
+	APPROVED_MANAGER = "APPROVED_MANAGER",
+	REJECTED = "REJECTED",
+}
+
+export enum WeekDay {
+	MONDAY = "MONDAY",
+	TUESDAY = "TUESDAY",
+	WEDNESDAY = "WEDNESDAY",
+	THURSDAY = "THURSDAY",
+	FRIDAY = "FRIDAY",
+	SATURDAY = "SATURDAY",
+	SUNDAY = "SUNDAY",
+}
+
+export enum ShiftType {
+	DIURNAL = "DIURNAL",
+	NOCTURNAL = "NOCTURNAL",
+}
