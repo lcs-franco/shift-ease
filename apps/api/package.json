@@ -6,8 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "prebuild": "prisma generate",
     "build": "nest build",
-    "postbuild": "prisma generate && prisma migrate deploy && yarn db:seed",
+    "postbuild": "prisma migrate deploy && yarn db:seed",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "dev": "nest start --watch --preserveWatchOutput",
